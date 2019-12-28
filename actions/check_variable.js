@@ -23,31 +23,9 @@ section: "Conditions",
 //---------------------------------------------------------------------
 
 subtitle: function(data) {
-	const comparisons = ["Exists", "Equals", "Equals Exactly", "Less Than", "Greater Than", "Includes", "Matches Regex", "Length is Bigger Than", "Length is Smaller Than", "Length is Equals", "Starts With", "Ends With", "Matches Full Regex", "Less Than or Equal to", "Greater Than or Equal to"];
 	const results = ["Continue Actions", "Stop Action Sequence", "Jump To Action", "Jump Forward Actions"];
-	return `${comparisons[parseInt(data.comparison)]} | If True: ${results[parseInt(data.iftrue)]} ~ If False: ${results[parseInt(data.iffalse)]}`;
+	return `If True: ${results[parseInt(data.iftrue)]} ~ If False: ${results[parseInt(data.iffalse)]}`;
 },
-
-//---------------------------------------------------------------------
-	 // DBM Mods Manager Variables (Optional but nice to have!)
-	 //
-	 // These are variables that DBM Mods Manager uses to show information
-	 // about the mods for people to see in the list.
-	 //---------------------------------------------------------------------
-
-	 // Who made the mod (If not set, defaults to "DBM Mods")
-	 author: "DBM, EGGSY, MrGold, Lasse, ZockerNico, TheMonDon", //UI fixed by MrGold
-
-	 // The version of the mod (Defaults to 1.0.0)
-	 version: "1.9.6", //Added in 1.9.1
-
-	 // A short description to show on the mod line for this mod (Must be on a single line)
-	 short_description: "Added more options to default action.",
-
-	 // If it depends on any other mods by name, ex: WrexMODS if the mod uses something from WrexMods
-
-
-	 //---------------------------------------------------------------------
 
 //---------------------------------------------------------------------
 // Action Fields
@@ -77,10 +55,9 @@ fields: ["storage", "varName", "comparison", "value", "iftrue", "iftrueVal", "if
 
 html: function(isEvent, data) {
 	return `
-	<div><p>This action has been modified by DBM Mods.</p></div><br>
 <div>
 	<div style="float: left; width: 35%;">
-		Source Variable:<br>
+		Variable:<br>
 		<select id="storage" class="round" onchange="glob.refreshVariableList(this)">
 			${data.variables[1]}
 		</select>
@@ -91,29 +68,21 @@ html: function(isEvent, data) {
 	</div>
 </div><br><br><br>
 <div style="padding-top: 8px;">
-	<div style="float: left; width: 35%;">
+	<div style="float: left; width: 45%;">
 		Comparison Type:<br>
-		<select id="comparison" class="round" onchange="glob.onChange1(this)">
-			<option value="0" selected>Exists</option>
-			<option value="1">Equals</option>
+		<select id="comparison" class="round">
+			<option value="0">Exists</option>
+			<option value="1" selected>Equals</option>
 			<option value="2">Equals Exactly</option>
 			<option value="3">Less Than</option>
-			<option value="13">Less Than or Equal to</option>
 			<option value="4">Greater Than</option>
-			<option value="14">Greater Than or Equal to</option>
 			<option value="5">Includes</option>
 			<option value="6">Matches Regex</option>
-			<option value="12">Matches Full Regex</option>
-			<option value="7">Length is Bigger Than</option>
-			<option value="8">Length is Smaller Than</option>
-			<option value="9">Length is Equals</option>
-			<option value="10">Starts With</option>
-			<option value="11">Ends With</option>
 		</select>
 	</div>
-	<div style="float: right; width: 60%; display: none;" id="directValue">
+	<div style="float: right; width: 50%;">
 		Value to Compare to:<br>
-		<input id="value" class="round" type="text" name="is-eval" placeholder="">
+		<input id="value" class="round" type="text" name="is-eval">
 	</div>
 </div><br><br><br>
 <div style="padding-top: 8px;">
@@ -132,26 +101,6 @@ html: function(isEvent, data) {
 init: function() {
 	const {glob, document} = this;
 
-	glob.onChange1 = function(event) {
-		if(parseInt(event.value) == 0) {
-			document.getElementById('directValue').style.display = 'none';
-		} else {
-			document.getElementById('directValue').style.display = null;
-		};
-		switch(parseInt(event.value)) {
-			case 6:
-				document.getElementById('value').placeholder = "('My'|'Regex')";
-				break;
-			case 12:
-				document.getElementById('value').placeholder = "/('My'|'Regex')\\w+/igm";
-				break;
-			default:
-				document.getElementById('value').placeholder = "";
-		};
-	};
-
-	glob.onChange1(document.getElementById('comparison'));
-	glob.refreshVariableList(document.getElementById('storage'));
 	glob.onChangeTrue(document.getElementById('iftrue'));
 	glob.onChangeFalse(document.getElementById('iffalse'));
 },
@@ -199,30 +148,6 @@ action: function(cache) {
 				break;
 			case 6:
 				result = Boolean(val1.match(new RegExp('^' + val2 + '$', 'i')));
-				break;
-			case 7:
-				result = Boolean(val1.length > val2);
-				break;
-			case 8:
-				result = Boolean(val1.length < val2);
-				break;
-			case 9: //Added by Lasse
-			  	result = Boolean(val1.length == val2);
-			  	break;
-			case 10: //Added by MrGold
-			  	result = Boolean(val1.startsWith(val2));
-			  	break;
-			case 11: //Added by MrGold
-			  	result = Boolean(val1.endsWith(val2));
-			  	break;
-			case 12: //Added by ZockerNico
-				result = Boolean(val1.match(new RegExp(val2)));
-				break;
-			case 13: //Added by TheMonDon
-				result = Boolean(val1 <= val2);
-				break;
-			case 14: //Added by TheMonDon
-				result = Boolean(val1 >= val2);
 				break;
 		}
 	}
